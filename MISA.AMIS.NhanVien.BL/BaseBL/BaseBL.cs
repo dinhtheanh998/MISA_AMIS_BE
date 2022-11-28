@@ -11,6 +11,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static OfficeOpenXml.ExcelErrorValue;
+using System.Xml.Linq;
 
 namespace MISA.AMIS.NhanVien.BL.BaseBL
 {
@@ -59,40 +61,6 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
             return _baseDL.GetRecordByID(recordID);
         }
 
-        ///// <summary>
-        ///// Thêm bản ghi
-        ///// </summary>
-        ///// <param name="record"></param>
-        ///// <returns></returns>
-        //public ResponseData InsertRecord(T record)
-        //{
-        //    var isValid = ValidateData(null, record);
-        //    //return new ResponseData(true, null);
-        //    if (!isValid.IsSuccess)
-        //    {
-        //        return new ResponseData(isValid.IsSuccess, isValid.Data);
-        //    }
-        //    else
-        //    {
-        //        return new ResponseData(true, _baseDL.InsertRecord(record));
-        //    }
-        //    //return Guid.Empty; //"00000000-0000-0000-0000-000000000000"
-        //    //var isValid = ValidateData(record);
-
-        //}
-
-        ///// <summary>
-        ///// Sửa bản ghi
-        ///// </summary>
-        ///// <param name="recordID"></param>
-        ///// <param name="record"></param>
-        ///// <returns></returns>
-        //public int UpdateRecord(Guid recordID, T record)
-        //{
-
-        //    return _baseDL.UpdateRecord(recordID, record);
-        //}
-
         /// <summary>
         /// Thêm hoặc sửa bản ghi
         /// </summary>
@@ -121,8 +89,10 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
         /// <returns></returns>
         public ResponseData ValidateData(Guid? recordID, T record)
         {
+            List<object> Errors = new List<object>();
             //lấy ra tất cả attribute có attribute là "IsNotNullOrEmptyAttribute"
 
+            //var properties = record.GetType().GetProperties();
             var properties = record.GetType().GetProperties();
             foreach (var prop in properties)
             {
@@ -156,7 +126,7 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
                     var oldRecord = _baseDL.GetRecordByID((Guid)recordID);
                     bool compareCode = false;
                     // Lấy ra mã trước lúc chỉnh sửa
-                    if (oldRecord!= null)
+                    if (oldRecord != null)
                     {
                     var oldRecordCode = oldRecord.GetType().GetProperty(propName).GetValue(oldRecord);
                     compareCode = CompareCode(oldRecordCode.ToString(), propValue.ToString(), 2);
@@ -165,11 +135,15 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
 
                     // so sánh 2 mã  ( true nếu mã cũ lớn hơn mã mới)
                     if (compareCode) {
-                        return new ResponseData(false, new ErrorResult(
-                                AMISErrorCode.Validate,
-                                Resource.DevMsg_Validate,
-                                Resource.UserMsg_Code_LessThan,
-                                moreInfo: Resource.More_Info));
+                        Errors.Add(new {
+                            name = propName,
+                            value = Resource.UserMsg_Code_LessThan
+                        });
+                        //return new ResponseData(false, new ErrorResult(
+                        //        AMISErrorCode.Validate,
+                        //        Resource.DevMsg_Validate,
+                        //        Resource.UserMsg_Code_LessThan,
+                        //        moreInfo: Resource.More_Info));
                     }
                     var data = _baseDL.CheckDuplicate(propValue.ToString()).Data;
                     var codeData = data.GetType().GetProperty("recordCode").GetValue(data)?.ToString();
@@ -178,19 +152,20 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
                     // nếu có ID =>  là sửa
                     if (recordID != Guid.Empty)
                     {
-                        if (data != null)
+                        if (data.GetType().GetProperty("recordID").GetValue(data) != null)
                         {
                             
                             // Lấy ra id của bản ghi trong db
                             var idData = data.GetType().GetProperty("recordID").GetValue(data).ToString();
                             if (idData != recordID.ToString())
                             {
-                                return new ResponseData(false, new ErrorResult(
-                                AMISErrorCode.Validate,
-                                Resource.DevMsg_Validate,
-                                errorMessage,
-                                moreInfo: Resource.More_Info
-                            ));
+                                Errors.Add(errorMessage);
+                                //return new ResponseData(false, new ErrorResult(
+                                //AMISErrorCode.Validate,
+                                //Resource.DevMsg_Validate,
+                                //errorMessage,
+                                //moreInfo: Resource.More_Info
+                            //));
                             }
                         }
                     } else
@@ -200,12 +175,17 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
                             
                             if (codeData == propValue.ToString())
                             {
-                                return new ResponseData(false, new ErrorResult(
-                                AMISErrorCode.Validate,
-                                Resource.DevMsg_Validate,
-                                errorMessage,
-                                moreInfo: Resource.More_Info
-                            ));
+                                Errors.Add(new
+                                {
+                                    name = propName,
+                                    value = errorMessage
+                                });
+                                //return new ResponseData(false, new ErrorResult(
+                                //AMISErrorCode.Validate,
+                                //Resource.DevMsg_Validate,
+                                //errorMessage,
+                                //moreInfo: Resource.More_Info
+                                //));
                             }
                         }
                     }
@@ -221,13 +201,18 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
                     var errorMessage = (attribute as IsNotNullOrEmptyAttribute).ErrorMessage;
                     if (propValue == null || propValue.ToString().Trim() == "" || propValue.ToString() == Guid.Empty.ToString())
                     {
-                        return new ResponseData(false, new ErrorResult(
-                        AMISErrorCode.Validate,
-                                Resource.DevMsg_Validate,
-                                errorMessage,
-                                moreInfo: Resource.More_Info
-                                
-                        ));
+                        Errors.Add(new
+                        {
+                            name = propName,
+                            value = errorMessage
+                        })
+                        //return new ResponseData(false, new ErrorResult(
+                        //AMISErrorCode.Validate,
+                        //        Resource.DevMsg_Validate,
+                        //        errorMessage,
+                        //        moreInfo: Resource.More_Info
+
+                        //));
                     }
                 }
 
@@ -238,12 +223,17 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
                     bool checkEmail = IsValidEmail(propValue?.ToString());
                     if (propValue != null && !checkEmail)
                     {
-                        return new ResponseData(false, new ErrorResult(
-                        AMISErrorCode.Validate,
-                                Resource.DevMsg_Validate,
-                                errorMessage,
-                                moreInfo: Resource.More_Info
-                        ));
+                        //return new ResponseData(false, new ErrorResult(
+                        //AMISErrorCode.Validate,
+                        //        Resource.DevMsg_Validate,
+                        //        errorMessage,
+                        //        moreInfo: Resource.More_Info
+                        //));
+                        Errors.Add(new
+                        {
+                            name = propName,
+                            value = errorMessage
+                        })
                     }
                 }
 
@@ -251,14 +241,19 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
                 {
                     var attribute = prop.GetCustomAttributes(typeof(BirhOfDateAttribute), true).FirstOrDefault();
                     var errorMessage = (attribute as BirhOfDateAttribute).ErrorMessage;
-                    if (propValue != null && !IsValidDate(propValue.ToString()) && propValue.ToString() != "")
+                    if (propValue != null && !IsValidDateOfBirth(propValue.ToString()) && propValue.ToString() != "")
                     {
-                        return new ResponseData(false, new ErrorResult(
-                        AMISErrorCode.Validate,
-                                Resource.DevMsg_Validate,
-                                errorMessage,
-                                moreInfo: Resource.More_Info
-                        ));
+                        //return new ResponseData(false, new ErrorResult(
+                        //AMISErrorCode.Validate,
+                        //        Resource.DevMsg_Validate,
+                        //        errorMessage,
+                        //        moreInfo: Resource.More_Info
+                        //));
+                        Errors.Add(new
+                        {
+                            name = propName,
+                            value = errorMessage
+                        });
                     }
                 }
                 
@@ -274,14 +269,28 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
                     
                     if(propValue != null && !regex.IsMatch(propValue.ToString()) && !canNullOrEmpty)
                     {
-                        return new ResponseData(false, new ErrorResult(
-                                AMISErrorCode.Validate,
-                                Resource.DevMsg_Validate,
-                                errorMessage,
-                                moreInfo: Resource.More_Info
-                        ));
+                        //return new ResponseData(false, new ErrorResult(
+                        //        AMISErrorCode.Validate,
+                        //        Resource.DevMsg_Validate,
+                        //        errorMessage,
+                        //        moreInfo: Resource.More_Info
+                        //));
+                        Errors.Add(new
+                        {
+                            name = propName,
+                            value = errorMessage
+                        });
                     }
                 }
+            }
+            if (Errors.Count > 0)
+            {
+                return new ResponseData(false, new ErrorResult(
+                        AMISErrorCode.Validate,
+                        Resource.DevMsg_Validate,
+                        Errors.ToString(),
+                        moreInfo: Resource.More_Info
+                ));
             }
             return new ResponseData(true, null);
         }
@@ -316,7 +325,7 @@ namespace MISA.AMIS.NhanVien.BL.BaseBL
         /// </summary>
         /// <param name="date">Ngày sinh</param>
         /// <returns>true: nếu nhỏ hơn ngày hiện tại và tuổi bé hơn 200 ngược lại false </returns>
-        public static bool IsValidDate(string date)
+        public static bool IsValidDateOfBirth(string date)
         {
             try
             {

@@ -85,6 +85,8 @@ namespace MISA.AMIS.NhanVien.Common.Entities
         /// <summary>
         /// Địa chỉ
         /// </summary>
+        /// 
+
         public string? Adress { get; set; }
 
         /// <summary>
@@ -115,11 +117,13 @@ namespace MISA.AMIS.NhanVien.Common.Entities
         /// <summary>
         /// Tên ngân hàng
         /// </summary>
+        /// 
         public string? BankName { get; set; }
 
         /// <summary>
         /// Chi nhánh
         /// </summary>
+        /// 
         public string? BankBranch { get; set; }
 
         /// <summary>

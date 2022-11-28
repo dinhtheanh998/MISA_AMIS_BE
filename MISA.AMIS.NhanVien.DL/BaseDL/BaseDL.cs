@@ -280,8 +280,7 @@ namespace MISA.AMIS.NhanVien.DL
                         propValue = prop.GetValue(record);
                     }else
                     {
-                    propValue = prop.GetValue(record).ToString().Trim() == "" ? null : prop.GetValue(record);
-                        
+                        propValue = prop.GetValue(record).ToString().Trim() == "" ? null : prop.GetValue(record);                        
                     }
                 }
                 parameters.Add($"@{prop.Name}", propValue);

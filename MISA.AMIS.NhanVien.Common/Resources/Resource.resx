@@ -141,9 +141,25 @@
     <value>Code emp duplicate</value>
     <comment>Thống báo cho dev khi mã nhân viên đã tồn tại</comment>
   </data>
+  <data name="Display_Excel_FeMale" xml:space="preserve">
+    <value>Nữ</value>
+    <comment>Hiển thị giới tính là Nữ trong file excel</comment>
+  </data>
+  <data name="Display_Excel_Male" xml:space="preserve">
+    <value>Nam</value>
+    <comment>Hiển thị giới tính là Nam trong file excel</comment>
+  </data>
+  <data name="Display_excel_Other" xml:space="preserve">
+    <value>Khác</value>
+    <comment>Hiển thị giới tính là Khác trong file excel</comment>
+  </data>
   <data name="Employee_EmployeeCode_Duplicate" xml:space="preserve">
     <value>Mã nhân viên đã tồn tại trong hệ thống.</value>
     <comment>Thông báo cho user mã nhân viên đã tồn tại trong hệ thống (khi sửa, thêm)</comment>
+  </data>
+  <data name="Excel_List_Employee" xml:space="preserve">
+    <value>Danh sách nhân viên</value>
+    <comment>Hiển thị title danh sách nhân viên trong file excel</comment>
   </data>
   <data name="More_Info" xml:space="preserve">
     <value>https://openapi.misa.com.vn/errorcode/4</value>

@@ -109,7 +109,17 @@ namespace MISA.AMIS.NhanVien.Common
         }
     }
 
+    /// <summary>
+    /// Có thể null hoặc trống
+    /// </summary>
     public class CanNullOrEmptyAttribute : Attribute
     {
+    }
+
+    public class AttributeChungAttribute : Attribute
+    {
+        public bool khongtrong { get; set; }
+
+        public bool Ngaythang { get; set; }
     }
 }

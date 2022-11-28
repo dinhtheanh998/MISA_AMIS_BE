@@ -115,11 +115,47 @@ namespace MISA.AMIS.NhanVien.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nữ.
+        /// </summary>
+        public static string Display_Excel_FeMale {
+            get {
+                return ResourceManager.GetString("Display_Excel_FeMale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nam.
+        /// </summary>
+        public static string Display_Excel_Male {
+            get {
+                return ResourceManager.GetString("Display_Excel_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Khác.
+        /// </summary>
+        public static string Display_excel_Other {
+            get {
+                return ResourceManager.GetString("Display_excel_Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mã nhân viên đã tồn tại trong hệ thống..
         /// </summary>
         public static string Employee_EmployeeCode_Duplicate {
             get {
                 return ResourceManager.GetString("Employee_EmployeeCode_Duplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Danh sách nhân viên.
+        /// </summary>
+        public static string Excel_List_Employee {
+            get {
+                return ResourceManager.GetString("Excel_List_Employee", resourceCulture);
             }
         }
         

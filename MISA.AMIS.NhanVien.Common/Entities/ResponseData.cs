@@ -18,11 +18,14 @@ namespace MISA.AMIS.NhanVien.Common
         /// </summary>
         public object? Data { get; set; }
 
+
+        #region Contructor
         public ResponseData(bool isSuccess, object? data)
         {
             IsSuccess = isSuccess;
             Data = data;
-        }
+        } 
+        #endregion
 
     }
 }

@@ -73,7 +73,6 @@ namespace MISA.AMIS.NhanVien.DL
                 }
 
                 var parameters = new DynamicParameters();
-
                 parameters.Add("listId", listRemove);
                 parameters.Add("countRows", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 mySqlConnection.Execute(sqlCommand, parameters, transaction, commandType:CommandType.StoredProcedure);
